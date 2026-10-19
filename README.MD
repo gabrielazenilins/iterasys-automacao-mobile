@@ -39,14 +39,15 @@ O Firefox fica de fora porque o Playwright não emula mobile nele.
 | MOBILE_CT_003 | Campos abrem o teclado adequado: e-mail com `type="email"` e senha com `type="password"` | Sim | Passa |
 | MOBILE_CT_004 | Bloqueio com credenciais inválidas usando toque (`tap`) em vez de clique | Sim | Passa |
 
-Resultados obtidos no Android (Pixel 7).
+Resultados obtidos no Android (Pixel 7) e no iPhone 14: todos os testes passam nos dois dispositivos, e o único ✘ é a falha esperada do LOGIN_CA_002 (tela). **Nenhum defeito novo foi encontrado na versão mobile.**
 
 ## Achados
 
 1. **LOGIN_CA_002: critério parcialmente atendido.** Com um link de recuperação inválido, o formulário de nova senha abre normalmente. Ao confirmar, o sistema impede a troca, mas só mostra "Não encontrado": não informa que o link não é mais válido e não orienta a solicitar uma nova recuperação. O comportamento é o mesmo no celular e no desktop. O teste está marcado com `test.fail()`: continua "passando" enquanto o defeito existir e passa a falhar quando for corrigido, avisando para remover a marcação.
 2. **A API responde HTTP 200 mesmo em falha.** Tanto `/api/signin` quanto `/api/password-reset` sinalizam erro apenas no corpo (`"success": false`). Quem integra precisa olhar o corpo, e não o status.
 3. **Mensagens da API em inglês.** A tela traduz a partir do `translation_code` (por exemplo, `not_found` vira "Não encontrado").
-4. **No celular, o cabeçalho vira menu hambúrguer.** "Entrar" e "Cadastrar-se" ficam dentro de um menu em tela cheia (`li.mobile-nav-menu-item`), com estrutura diferente da do desktop.
+4. **Nenhum defeito novo no mobile.** Os achados 1 a 3 se repetem no celular; os cenários específicos de mobile (menu, tamanho de tela, teclado e toque) passaram sem problemas.
+5. **No celular, o cabeçalho vira menu hambúrguer.** "Entrar" e "Cadastrar-se" ficam dentro de um menu em tela cheia (`li.mobile-nav-menu-item`), com estrutura diferente da do desktop.
 
 ## Estrutura
 
@@ -107,6 +108,7 @@ Sem `USER_EMAIL` e `USER_PASSWORD`, os testes que fazem login são ignorados e o
 - **Credenciais fora do código.** E-mail e senha vêm do `.env`, que está no `.gitignore`. Só o `.env.example`, sem valores, vai para o repositório.
 - **Um worker, sem paralelismo.** Os testes rodam contra uma plataforma real e usam a mesma conta; rodar um de cada vez evita bloqueio por excesso de requisições e falhas difíceis de explicar.
 - **Trace e vídeo desligados.** Poderiam registrar o que é digitado e os cookies da sessão. Fica apenas o screenshot em caso de falha.
+- **Espera só o HTML ao abrir a página.** O `goto` usa `waitUntil: 'domcontentloaded'`: esperar todas as imagens e scripts externos às vezes travava o teste por lentidão do site. Os passos seguintes já esperam o elemento de que precisam.
 - **Nada é alterado no site.** O link de recuperação usa um token inventado, então nenhuma senha é trocada. O teste de cadastro apenas toca em "Cadastrar-se" e confere o aviso; nenhuma conta é criada.
 - **API observada pelo navegador.** Os testes capturam a resposta da chamada que a própria página faz, em vez de chamar a API diretamente. Assim cookies e token anti-CSRF ficam por conta do navegador, sem tratar nada sensível no código.
 - **Limite no login válido.** Após o login bem-sucedido o navegador navega para `/start` na hora e descarta o corpo da resposta; por isso o CT_001 confere o status da API e comprova o sucesso pela tela.

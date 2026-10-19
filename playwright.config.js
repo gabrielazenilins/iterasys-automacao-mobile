@@ -16,6 +16,7 @@ module.exports = defineConfig({
     trace: 'off',
     video: 'off',
     screenshot: 'only-on-failure',
+    //launchOptions: { slowMo: 1000 },
     locale: 'pt-BR',
   },
   // Cada projeto repete todos os testes em um navegador. Como é a plataforma real,

@@ -50,8 +50,11 @@ class LoginPage {
   }
 
   async acessarPaginaDeCursos() {
-    await this.page.goto('/');
-  }
+  // Espera só o HTML carregar, e não todas as imagens e scripts externos:
+  // às vezes eles demoram e travavam o teste. Os próximos passos já esperam
+  // o elemento de que precisam.
+  await this.page.goto('/', { waitUntil: 'domcontentloaded' });
+}
 
   /**
    * No mobile, abre o menu hambúrguer quando a opção do cabeçalho não está visível.
