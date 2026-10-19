@@ -1,0 +1,17 @@
+{
+  "name": "iterasys-automacao-mobile",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Automação de casos de teste e critérios de aceitação - plataforma Iterasys em navegador mobile",
+  "scripts": {
+    "test": "playwright test --project=android",
+    "test:headed": "playwright test --headed --project=android",
+    "test:iphone": "playwright test --project=iphone",
+    "test:all": "playwright test",
+    "test:ui": "playwright test --ui"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.49.0",
+    "dotenv": "^16.4.5"
+  }
+}
